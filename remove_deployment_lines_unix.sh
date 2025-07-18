@@ -16,8 +16,8 @@ remove_deployment_lines() {
     # Create a temporary file
     local temp_file=$(mktemp)
     
-    # Use sed to remove lines between markers (inclusive)
-    sed '/\/\/Deployment/,/\/\/End-Of-Deployment/d' "$filename" > "$temp_file"
+    # Use sed to remove lines between markers (exclusive - keep the markers)
+    sed '/\/\/Deployment/,/\/\/End-Of-Deployment/{/\/\/Deployment/!{/\/\/End-Of-Deployment/!d}}' "$filename" > "$temp_file"
     
     # Replace original file with modified content
     mv "$temp_file" "$filename"
@@ -30,7 +30,7 @@ remove_deployment_lines() {
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     if [ $# -eq 0 ]; then
         echo "Usage: $0 <filename>"
-        echo "Removes all lines between //Deployment and //End-Of-Deployment markers"
+        echo "Removes content between //Deployment and //End-Of-Deployment markers (keeping the markers)"
         exit 1
     fi
     
